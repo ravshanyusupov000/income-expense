@@ -3,8 +3,6 @@
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 
 {% block content %}
-<div class="d-flex align-items-center justify-content-between mb-3">
-  <div>
 <div class="row align-items-center mb-3">
   <div class="col-12 col-lg-6">
     <div class="muted small">{{ range_label }}</div>
@@ -13,27 +11,36 @@
 
   <div class="col-12 col-lg-6">
     <div class="d-flex flex-wrap justify-content-lg-end align-items-center gap-3 mt-2 mt-lg-0">
-      <!-- Balance -->
       <div class="text-lg-end">
         <div class="muted small">{% trans "Balance" %}</div>
         <div class="fs-3 fw-semibold">{{ balance|default:"0.00" }}</div>
       </div>
 
-      <!-- Switch -->
+      {% if fx.USD and fx.EUR %}
+        <div class="small text-muted text-lg-end">
+          {% trans "USD" %}: {{ fx.USD.rate|floatformat:2 }} {% trans "UZS" %} •
+          {% trans "EUR" %}: {{ fx.EUR.rate|floatformat:2 }} {% trans "UZS" %} •
+          {{ fx.USD.date }}
+        </div>
+      {% endif %}
+
       <div class="btn-group">
-        <a class="btn btn-sm {% if range == 'day' %}btn-primary{% else %}btn-outline-primary{% endif %}"
-           href="?range=day">{% trans "Day" %}</a>
-        <a class="btn btn-sm {% if range == 'week' %}btn-primary{% else %}btn-outline-primary{% endif %}"
-           href="?range=week">{% trans "Week" %}</a>
-        <a class="btn btn-sm {% if range == 'month' %}btn-primary{% else %}btn-outline-primary{% endif %}"
-           href="?range=month">{% trans "Month" %}</a>
-        <a class="btn btn-sm {% if range == 'year' %}btn-primary{% else %}btn-outline-primary{% endif %}"
-           href="?range=year">{% trans "Year" %}</a>
+        <a class="btn btn-sm {% if range == 'day' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="?range=day">
+          {% trans "Day" %}
+        </a>
+        <a class="btn btn-sm {% if range == 'week' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="?range=week">
+          {% trans "Week" %}
+        </a>
+        <a class="btn btn-sm {% if range == 'month' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="?range=month">
+          {% trans "Month" %}
+        </a>
+        <a class="btn btn-sm {% if range == 'year' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="?range=year">
+          {% trans "Year" %}
+        </a>
       </div>
     </div>
   </div>
 </div>
-
 
 <div class="row g-3 mb-3">
   <div class="col-12 col-md-3">
@@ -42,18 +49,21 @@
       <div class="fs-4 fw-semibold">{{ income_sum|default:"0.00" }}</div>
     </div>
   </div>
+
   <div class="col-12 col-md-3">
     <div class="card card-soft p-3">
       <div class="muted small">{% trans "Expense" %}</div>
       <div class="fs-4 fw-semibold">{{ expense_sum|default:"0.00" }}</div>
     </div>
   </div>
+
   <div class="col-12 col-md-3">
     <div class="card card-soft p-3">
       <div class="muted small">{% trans "Transactions" %}</div>
       <div class="fs-4 fw-semibold">{{ tx_count|default:"0" }}</div>
     </div>
   </div>
+
   <div class="col-12 col-md-3">
     <div class="card card-soft p-3">
       <div class="muted small">{% trans "Profit" %}</div>
@@ -89,7 +99,6 @@
 
 {% block scripts %}
 <script>
-  // backend’dan JSON ko‘rinishida keladigan data:
   const lineLabels = {{ line_labels|safe }};
   const lineData   = {{ line_data|safe }};
 

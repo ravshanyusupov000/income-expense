@@ -5,22 +5,19 @@ from .models import Category, Transaction, SupportTicket
 
 User = get_user_model()
 
-
-# admin.py
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'tx_type', 'user')
     list_filter = ('tx_type', 'user')
     search_fields = ('name',)
 
-    # formda user ko‘rinmasin
     def get_fields(self, request, obj=None):
         fields = super().get_fields(request, obj)
         return [f for f in fields if f != "user"]
 
     def save_model(self, request, obj, form, change):
         if not change:
-            obj.user = None   # GLOBAL kategoriya
+            obj.user = None
         super().save_model(request, obj, form, change)
 
 @admin.register(Transaction)

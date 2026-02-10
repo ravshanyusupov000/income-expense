@@ -13,6 +13,7 @@ from .services import update_tx, delete_tx,create_tx
 from datetime import timedelta, date
 from django.utils.translation import gettext as _
 from django.shortcuts import render
+from .fx import get_cbu_rates
 
 
 class TransactionUpdateView(LoginRequiredMixin, UpdateView):
@@ -117,8 +118,12 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ctx["donut_labels"] = json.dumps([c["category__name"] for c in cats])
         ctx["donut_data"] = json.dumps([float(c["total"]) for c in cats])
 
-        return ctx
+        try:
+            ctx["fx"] = get_cbu_rates()
+        except Exception:
+            ctx["fx"] = {}
 
+        return ctx
 class TransactionListView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = "finance/transaction_list.html"
