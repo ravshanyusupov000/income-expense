@@ -1,0 +1,114 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Dashboard" %}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+<div class="row align-items-center mb-3">
+  <div class="col-12 col-lg-6">
+    <div class="muted small">{{ range_label }}</div>
+    <h3 class="mb-0">{% trans "Analytics" %}</h3>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="d-flex flex-wrap justify-content-lg-end align-items-center gap-3 mt-2 mt-lg-0">
+      <!-- Balance -->
+      <div class="text-lg-end">
+        <div class="muted small">{% trans "Balance" %}</div>
+        <div class="fs-3 fw-semibold">{{ balance|default:"0.00" }}</div>
+      </div>
+
+      <!-- Switch -->
+      <div class="btn-group">
+        <a class="btn btn-sm {% if range == 'day' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="?range=day">{% trans "Day" %}</a>
+        <a class="btn btn-sm {% if range == 'week' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="?range=week">{% trans "Week" %}</a>
+        <a class="btn btn-sm {% if range == 'month' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="?range=month">{% trans "Month" %}</a>
+        <a class="btn btn-sm {% if range == 'year' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="?range=year">{% trans "Year" %}</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row g-3 mb-3">
+  <div class="col-12 col-md-3">
+    <div class="card card-soft p-3">
+      <div class="muted small">{% trans "Income" %}</div>
+      <div class="fs-4 fw-semibold">{{ income_sum|default:"0.00" }}</div>
+    </div>
+  </div>
+  <div class="col-12 col-md-3">
+    <div class="card card-soft p-3">
+      <div class="muted small">{% trans "Expense" %}</div>
+      <div class="fs-4 fw-semibold">{{ expense_sum|default:"0.00" }}</div>
+    </div>
+  </div>
+  <div class="col-12 col-md-3">
+    <div class="card card-soft p-3">
+      <div class="muted small">{% trans "Transactions" %}</div>
+      <div class="fs-4 fw-semibold">{{ tx_count|default:"0" }}</div>
+    </div>
+  </div>
+  <div class="col-12 col-md-3">
+    <div class="card card-soft p-3">
+      <div class="muted small">{% trans "Profit" %}</div>
+      <div class="fs-4 fw-semibold">{{ profit|default:"0.00" }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-8">
+    <div class="card card-soft p-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="fw-semibold">{% trans "Review" %}</div>
+        <div class="muted small">{% trans "Month" %}</div>
+      </div>
+      <canvas id="lineChart" height="110"></canvas>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-4">
+    <div class="card card-soft p-3 mb-3">
+      <div class="fw-semibold mb-2">{% trans "Views (Weekly)" %}</div>
+      <canvas id="barChart" height="120"></canvas>
+    </div>
+
+    <div class="card card-soft p-3">
+      <div class="fw-semibold mb-2">{% trans "Category Share" %}</div>
+      <canvas id="donutChart" height="140"></canvas>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // backend’dan JSON ko‘rinishida keladigan data:
+  const lineLabels = {{ line_labels|safe }};
+  const lineData   = {{ line_data|safe }};
+
+  new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: { labels: lineLabels, datasets: [{ label: 'Balance', data: lineData, tension: .35 }] },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+  });
+
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: { labels: {{ bar_labels|safe }}, datasets: [{ label: 'Daily', data: {{ bar_data|safe }} }] },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+  });
+
+  new Chart(document.getElementById('donutChart'), {
+    type: 'doughnut',
+    data: { labels: {{ donut_labels|safe }}, datasets: [{ data: {{ donut_data|safe }} }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+</script>
+{% endblock %}

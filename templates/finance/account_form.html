@@ -1,0 +1,39 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Report" %}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <div class="muted small">{% if object %}{% trans "Update" %}{% else %}{% trans "Create" %}{% endif %}</div>
+    <h3 class="mb-0">{% trans "Report" %}</h3>
+  </div>
+  <a class="btn btn-outline-secondary" href="{% url 'finance:account_list' %}">{% trans "Back" %}</a>
+</div>
+
+<div class="card card-soft p-3" style="max-width:720px">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="row g-2">
+      <div class="col-12 col-md-6">
+        <label class="form-label">{% trans "Name" %}</label>
+        {{ form.name }} {{ form.name.errors }}
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label">{% trans "Kind" %}</label>
+        {{ form.kind }} {{ form.kind.errors }}
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="form-label">{% trans "Currency"%}</label>
+        {{ form.currency }} {{ form.currency.errors }}
+      </div>
+    </div>
+
+    <button class="btn btn-primary mt-3">{% trans "Save" %}</button>
+  </form>
+</div>
+{% endblock %}

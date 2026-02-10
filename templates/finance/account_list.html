@@ -1,0 +1,45 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Accounts" %}{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <div class="muted small">{% trans "Money" %}</div>
+    <h3 class="mb-0">{% trans "Accounts" %}</h3>
+  </div>
+  <a class="btn btn-primary" href="{% url 'finance:account_add' %}">{% trans "Add Account" %}</a>
+</div>
+
+<div class="card card-soft p-3">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>{% trans "Name" %}</th>
+          <th>{% trans "Kind" %}</th>
+          <th>{% trans "Currency" %}</th>
+          <th>{% trans "Balance" %}</th>
+          <th class="text-end">{% trans "Operations" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in object_list %}
+        <tr>
+          <td class="fw-semibold">{{ a.name }}</td>
+          <td>{{ a.get_kind_display }}</td>
+          <td>{{ a.currency }}</td>
+          <td>{{ a.balance }}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'finance:account_edit' a.pk %}">{% trans "Edit" %}</a>
+            <a class="btn btn-sm btn-outline-danger" href="{% url 'finance:account_delete' a.pk %}">{% trans "Delete" %}</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center muted py-4">{% trans "No account" %}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

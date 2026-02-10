@@ -1,0 +1,102 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Reports" %}{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-3">
+  <div class="col-12 col-lg-6">
+    <div class="muted small">{{ start|date:"j F Y" }} — {{ end|date:"j F Y" }}</div>
+    <h3 class="mb-0">{% trans "Report" %}</h3>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="d-flex flex-wrap justify-content-lg-end align-items-center gap-2 mt-2 mt-lg-0">
+      <div class="btn-group">
+        <a class="btn btn-sm {% if range == 'day' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="?range=day">{% trans "Day" %}</a>
+        <a class="btn btn-sm {% if range == 'week' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="?range=week">{% trans "Week" %}</a>
+        <a class="btn btn-sm {% if range == 'month' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="?range=month">{% trans "Month" %}</a>
+        <a class="btn btn-sm {% if range == 'year' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+           href="?range=year">{% trans "Year" %}</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-12 col-md-4">
+    <div class="card card-soft p-3">
+      <div class="muted small">{% trans "Income" %}</div>
+      <div class="fs-4 fw-semibold">{{ income_sum|default:"0.00" }}</div>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="card card-soft p-3">
+      <div class="muted small">{% trans "Expense" %}</div>
+      <div class="fs-4 fw-semibold">{{ expense_sum|default:"0.00" }}</div>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="card card-soft p-3">
+      <div class="muted small">{% trans "Profit" %}</div>
+      <div class="fs-4 fw-semibold">{{ profit|default:"0.00" }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card card-soft p-3">
+      <div class="fw-semibold mb-2">{% trans "Net (income - expense)" %}</div>
+      <canvas id="netChart" height="120"></canvas>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-6">
+    <div class="card card-soft p-3">
+      <div class="fw-semibold mb-2">{% trans "Daily" %}</div>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>{% trans "Date" %}</th>
+              <th>{% trans "Income" %}</th>
+              <th>{% trans "Expense" %}</th>
+              <th>{% trans "Net" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in table %}
+            <tr>
+              <td>{{ r.date }}</td>
+              <td class="text-success">{{ r.income }}</td>
+              <td class="text-danger">{{ r.expense }}</td>
+              <td class="fw-semibold">{{ r.net }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center muted py-4">{% trans "No data" %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const labels = {{ chart_labels|safe }};
+  const data = {{ chart_data|safe }};
+
+  new Chart(document.getElementById("netChart"), {
+    type: "bar",
+    data: { labels: labels, datasets: [{ label: "Net", data: data }] },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+  });
+</script>
+{% endblock %}
