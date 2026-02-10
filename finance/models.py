@@ -64,7 +64,6 @@ class Account(TimeStampedModel):
     def __str__(self):
         return f"{self.name} ({self.currency})"
 
-# models.py
 class Category(TimeStampedModel):
     class TxType(models.TextChoices):
         INCOME = "income", _("Income")
@@ -99,7 +98,7 @@ class Transaction(TimeStampedModel):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="transactions", verbose_name="User")
     tx_type = models.CharField(max_length=10, choices=TxType.choices, verbose_name="Type")
-    account = models.ForeignKey(Account, on_delete=models.PROTECT, related_name="transactions", verbose_name="Account")
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="transactions", verbose_name="Account")
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="transactions", verbose_name="Category")
     amount = models.DecimalField(max_digits=14, decimal_places=2, verbose_name="Amount")
     date = models.DateField(verbose_name="Date")

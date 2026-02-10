@@ -8,27 +8,6 @@ from .models import Transaction, Account
 from django.db.models import F
 
 
-
-def apply_transaction_effect(tx: Transaction, *, reverse: bool = False) -> None:
-    sign = Decimal("1")
-    if tx.tx_type == Transaction.TxType.EXPENSE:
-        sign = Decimal("-1")
-
-    if reverse:
-        sign = -sign
-
-    Account.objects.filter(pk=tx.account_id).update(balance=models.F("balance") + sign * tx.amount)
-
-
-@db_transaction.atomic
-def create_transaction(tx: Transaction) -> Transaction:
-    tx.full_clean()
-    tx.save()
-    from django.db.models import F
-    sign = 1 if tx.tx_type == Transaction.TxType.INCOME else -1
-    Account.objects.filter(pk=tx.account_id).update(balance=F("balance") + sign * tx.amount)
-    return tx
-
 def _sign(tx_type: str) -> int:
     return 1 if tx_type == Transaction.TxType.INCOME else -1
 

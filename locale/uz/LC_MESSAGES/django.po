@@ -239,9 +239,8 @@ msgstr "Kategoriya ulushi"
 msgid "Reports"
 msgstr "Hisobotlar"
 
-#: .\templates\finance\report.html:52
 msgid "Net (income - expense)"
-msgstr ""
+msgstr "Sof foyda (kirim − chiqim)"
 
 msgid "Daily"
 msgstr "Kunlik"
@@ -1614,3 +1613,6 @@ msgstr "Admin:"
 
 msgid "can also be used to log in."
 msgstr "orqali ham kirsa bo‘ladi"
+
+msgid "Are you sure you want to delete this transaction?"
+msgstr "Ushbu tranzaksiyani o‘chirishni xohlaysizmi?"

@@ -14,6 +14,7 @@ from datetime import timedelta, date
 from django.utils.translation import gettext as _
 from django.shortcuts import render
 from .fx import get_cbu_rates
+from django.http import HttpResponseRedirect
 
 
 class TransactionUpdateView(LoginRequiredMixin, UpdateView):
@@ -31,11 +32,11 @@ class TransactionUpdateView(LoginRequiredMixin, UpdateView):
         return kwargs
 
     def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.user = self.request.user
-        create_tx(tx=obj)
-        return super().form_valid(form)
+        new_obj = form.save(commit=False)
+        new_obj.user = self.request.user
 
+        self.object = update_tx(instance=self.object, new_tx=new_obj)
+        return HttpResponseRedirect(self.get_success_url())
 
 class TransactionDeleteView(LoginRequiredMixin, DeleteView):
     model = Transaction
@@ -45,9 +46,10 @@ class TransactionDeleteView(LoginRequiredMixin, DeleteView):
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
 
-    def form_valid(self, form):
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
         delete_tx(instance=self.object)
-        return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -65,7 +67,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             start = today - timedelta(days=6)
         elif range_ == "year":
             start = date(today.year, 1, 1)
-        else:  # month
+        else:
             start = today.replace(day=1)
             range_ = "month"
 
@@ -124,6 +126,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             ctx["fx"] = {}
 
         return ctx
+
 class TransactionListView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = "finance/transaction_list.html"
@@ -165,8 +168,10 @@ class TransactionCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.user = self.request.user
-        create_tx(tx=obj)
-        return super().form_valid(form)
+
+        self.object = create_tx(tx=obj)
+        return HttpResponseRedirect(self.get_success_url())
+
 
 
 class ReportView(LoginRequiredMixin, TemplateView):

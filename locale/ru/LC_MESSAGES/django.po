@@ -1640,3 +1640,6 @@ msgstr "Админ:"
 
 msgid "can also be used to log in."
 msgstr "также можно войти через"
+
+msgid "Are you sure you want to delete this transaction?"
+msgstr "Вы уверены, что хотите удалить эту транзакцию?"
